@@ -1,0 +1,983 @@
+/* ── Button ──────────────────────────────────────────── */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 5px;
+  /* Gold-warm gradient — all stops readable with dark text */
+  background: linear-gradient(135deg, #2A1A00, #8B6000, #FFD700);
+  color: #0A0A0A;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  transition: opacity 0.25s, box-shadow 0.25s;
+}
+
+.button:hover {
+  opacity: 0.88;
+  box-shadow: 0 7px 26px rgba(0, 0, 0, 0.45);
+}
+
+.button-ghost {
+  background: transparent;
+  border: 1.5px solid rgba(255, 215, 0, 0.55);
+  color: var(--accent-2);
+  box-shadow: none;
+}
+
+.button-ghost:hover {
+  background: rgba(255, 215, 0, 0.07);
+  border-color: var(--accent-2);
+}
+
+/* ── Album cards (hero gallery) ──────────────────────── */
+.album-card {
+  min-height: 138px;
+  display: grid;
+  align-content: end;
+  gap: 12px;
+}
+
+/* Warm gold placeholder for album + catalog cards */
+.album-art,
+.catalog-preview {
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(243, 199, 118, 0.28), transparent 40%),
+    radial-gradient(circle at 75% 70%, rgba(212, 160, 23, 0.18), transparent 35%),
+    linear-gradient(135deg, #1e1a10, #141210 50%, #0d0c09 100%);
+}
+
+.album-art {
+  min-height: 88px;
+}
+
+/* ── Section container ───────────────────────────────── */
+.section {
+  margin-top: 24px;
+  padding: 28px;
+}
+
+.section-heading {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.section-heading h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.section-heading.narrow p:last-child {
+  max-width: 70ch;
+}
+
+/* ── About — feature stat cards ──────────────────────── */
+.feature-grid,
+.catalog-grid,
+.services-grid,
+.contact-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.feature-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.feature-card {
+  min-height: 148px;
+  display: grid;
+  align-content: end;
+}
+
+/* ── Catalog — tab bar (underline style matching live site) */
+.category-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 24px 0;
+  border-bottom: 2px solid var(--line);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.25s, border-color 0.25s;
+  border-radius: 0;
+}
+
+.chip:hover {
+  color: var(--accent-2);
+}
+
+.chip.chip-active {
+  color: var(--accent-2);
+  border-bottom-color: var(--accent-2);
+}
+
+/* "New" badge inside chip */
+.chip span {
+  display: inline-block;
+  background: linear-gradient(135deg, #7C3AED, #A855F7);
+  color: #fff;
+  font-size: 0.45rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.45rem;
+  border-radius: 20px;
+  vertical-align: middle;
+}
+
+.chip-hot {
+  /* kept for backwards compat — no special bg in underline mode */
+}
+
+/* ── Catalog — product cards ─────────────────────────── */
+.catalog-grid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.catalog-card {
+  background: #1A1A1A !important;
+  border: 1.5px solid var(--line) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0 !important;
+}
+
+.catalog-card:hover {
+  border-color: var(--accent-2) !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.15) !important;
+}
+
+.catalog-card h3 {
+  margin: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+}
+
+.catalog-card p {
+  display: none;
+}
+
+.catalog-preview {
+  min-height: 210px;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+/* Actual product image inside catalog card */
+.catalog-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s;
+}
+
+.catalog-card:hover .catalog-img {
+  transform: scale(1.04);
+}
+
+/* ── Services — service cards ────────────────────────── */
+.services-grid {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.service-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--grad-gold);
+  transform: scaleX(0);
+  transition: transform 0.4s;
+  border-radius: 2px;
+}
+
+.service-card:hover::after {
+  transform: scaleX(1);
+}
+
+.service-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.service-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(212, 169, 65, 0.08);
+  font-size: 1.6rem;
+  margin-bottom: 0.8rem;
+}
+
+/* Service card heading: Cormorant */
+.service-card h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--accent-2);
+}
+
+.service-card p {
+  font-size: 0.82rem;
+  color: #E8C14A;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Order section layout ────────────────────────────── */
+.order-section {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.order-intro {
+  padding: 32px 28px;
+  background: linear-gradient(160deg, #111111 0%, #0d0d0d 100%);
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gold shimmer bar at the top of the panel */
+.order-intro-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--grad-gold);
+  border-radius: 16px 16px 0 0;
+}
+
+.order-intro-lead {
+  margin-top: 14px;
+  font-size: 0.92rem;
+  color: #C9A84C;
+  line-height: 1.8;
+}
+
+.order-intro h2,
+.review-section h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.highlight-list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  display: grid;
+  gap: 0;
+}
+
+.highlight-list li {
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(212, 169, 65, 0.1);
+  background: transparent;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.highlight-list li:last-child {
+  border-bottom: none;
+}
+
+.hl-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(212, 169, 65, 0.08);
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.hl-text {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+}
+
+/* Trust row below highlight list */
+.order-trust-row {
+  margin-top: 28px;
+  display: grid;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.order-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.order-trust-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(212, 169, 65, 0.08);
+  border: 1px solid rgba(212, 169, 65, 0.2);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.order-trust-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.order-trust-item strong {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  letter-spacing: 0.02em;
+}
+
+.order-trust-item span {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* ── Order form ──────────────────────────────────────── */
+.order-form {
+  padding: 22px;
+}
+
+.form-header p,
+.contact-card p,
+.review-card span {
+  margin: 0;
+}
+
+.form-header h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  margin: 0 0 4px;
+}
+
+/* DM Mono form subtitle */
+.form-header p {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 1.8rem !important;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+}
+
+label span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #D4A941;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  color: #E8C14A;
+  border: 1.5px solid rgba(255, 215, 0, 0.22);
+  background: #0D0D0D;
+  border-radius: 5px;
+  padding: 12px 14px;
+  outline: none;
+  font-size: 0.88rem;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.06);
+}
+
+select option {
+  background: #1A1A1A;
+  color: var(--accent-2);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 75px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #7A5A1A;
+  opacity: 0.8;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* File upload — custom styled drop zone */
+.upload-box {
+  position: relative;
+}
+
+.upload-box input[type='file'] {
+  opacity: 0;
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+}
+
+.upload-placeholder {
+  padding: 18px;
+  border-radius: 8px;
+  border: 1.5px dashed rgba(255, 215, 0, 0.35);
+  background: #141414;
+  text-align: center;
+  transition: border-color 0.25s, background 0.25s;
+}
+
+.upload-placeholder:hover {
+  border-color: rgba(255, 215, 0, 0.6);
+  background: #1A1500;
+}
+
+.upload-placeholder strong {
+  display: block;
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  margin-bottom: 0.3rem;
+}
+
+.upload-placeholder p {
+  margin: 0;
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.submit-button {
+  margin-top: 14px;
+  width: 100%;
+}
+
+/* ── Contact section ─────────────────────────────────── */
+.contact-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.contact-card:last-of-type {
+  grid-column: 1 / -1;
+}
+
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.social-links a {
+  color: var(--accent-2);
+}
+
+/* ── Contact — location panel ────────────────────────── */
+.location-panel {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  min-height: 360px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid var(--line);
+  background: rgba(212, 169, 65, 0.04);
+}
+
+.location-map {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(243, 199, 118, 0.18), transparent 20%),
+    radial-gradient(circle at 75% 30%, rgba(215, 168, 110, 0.16), transparent 22%),
+    linear-gradient(135deg, #0f0e08, #0a0c10 65%, #060709);
+  position: relative;
+}
+
+.location-map::before,
+.location-map::after {
+  content: '';
+  position: absolute;
+  inset: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.location-map::after {
+  inset: 54px;
+  background-image:
+    linear-gradient(90deg, rgba(212, 169, 65, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(212, 169, 65, 0.08) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.7;
+}
+
+.location-copy {
+  padding: 26px;
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.location-kicker {
+  margin: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.location-copy h3 {
+  margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  color: var(--accent-2);
+}
+
+/* ── Reviews section ─────────────────────────────────── */
+.review-card {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  padding: 24px;
+}
+
+.rating {
+  font-size: 1.4rem;
+}
+
+/* Contact card heading */
+.contact-card strong {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+  display: block;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── Nav text buttons (About Us / Achievements) ──────── */
+.brand-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.nav-text-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #D4A941;
+  transition: color 0.25s;
+  padding: 0;
+}
+
+.nav-text-btn:hover,
+.nav-text-btn.nav-active {
+  color: var(--accent-2);
+}
+
+/* ── Sub-pages (About / Achievements) ───────────────── */
+.sub-page {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.sub-page-section {
+  padding: 6rem 3rem 4rem;
+}
+
+.sub-page-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.sub-page-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.eyebrow-line {
+  width: 2rem;
+  height: 2px;
+  background: var(--grad-gold);
+  border-radius: 2px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.sub-page-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--accent-2);
+  margin-bottom: 0.5rem;
+  -webkit-text-fill-color: var(--accent-2);
+  background: none;
+}
+
+.sub-page-subtitle {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #C9A84C;
+  margin-bottom: 2rem;
+}
+
+.sub-page-card {
+  background: #1A1A1A;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 2.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.sub-page-card p {
+  font-size: 1rem;
+  color: #E8C14A;
+  line-height: 1.95;
+  margin-bottom: 1.4rem;
+}
+
+.sub-page-card p:last-child {
+  margin-bottom: 0;
+}
+
+.sub-page-card strong {
+  color: #FFD700;
+}
+
+.sub-page-card em {
+  font-style: italic;
+}
+
+.sub-page-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.sub-page-two-col .sub-page-card {
+  margin-bottom: 0;
+}
+
+.sub-page-icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.sub-page-card h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  margin-bottom: 0.7rem;
+}
+
+.sub-page-card p {
+  font-size: 0.9rem;
+}
+
+.sub-page-intro-note {
+  background: linear-gradient(135deg, rgba(180, 135, 60, 0.12), rgba(180, 135, 60, 0.04));
+  border: 1.5px solid rgba(180, 135, 60, 0.3);
+  border-radius: 14px;
+  padding: 1.6rem 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.sub-page-intro-note p {
+  font-size: 0.92rem;
+  color: #E8C14A;
+  line-height: 1.85;
+  margin: 0;
+}
+
+.sub-page-intro-note strong {
+  color: #FFD700;
+}
+
+/* Quote/CTA banner on About page */
+.sub-page-quote-banner {
+  background: linear-gradient(135deg, #0A0A0A 0%, #1A1200 100%);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sub-page-quote-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #F5F5F5;
+  margin-bottom: 0.5rem;
+}
+
+.sub-page-quote-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 1rem;
+}
+
+.sub-page-quote-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ── Achievements specific ───────────────────────────── */
+.achieve-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.achieve-stat {
+  background: #1A1A1A;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 1.8rem 1.2rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.achieve-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.achieve-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #C9A84C;
+  margin-top: 0.4rem;
+}
+
+.timeline-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  margin-bottom: 1.5rem !important;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+}
+
+.timeline-badge {
+  background: var(--grad-gold);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.timeline-text {
+  font-size: 0.9rem;
+  color: #E8C14A;
+  line-height: 1.7;
+  padding-top: 0.15rem;
+}
+
+.timeline-text strong {
+  color: #FFD700;
+}
+
+/* Award banner */
+.award-banner {
+  background: linear-gradient(135deg, #5c3a00 0%, #b8860b 50%, #8B6914 100%);
+  border-radius: 14px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.award-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.award-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.award-trophy {
+  font-size: 2.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.award-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(255, 215, 0, 0.75);
+  margin-bottom: 0.8rem;
+}
+
+.award-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  font-weight: 700;
+  color: var(--accent-2);
+  line-height: 1.2;
+  font-style: italic;
+  margin-bottom: 0.8rem;
+}
+
+.award-sub {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.1em;
+}
+
+/* Back button spacing */
+.sub-page-back {
+  margin-top: 0.5rem;
+}
+
+/* Mobile sub-pages */
+@media (max-width: 768px) {
+  .sub-page-section { padding: 5rem 1.2rem 3rem; }
+  .sub-page-two-col { grid-template-columns: 1fr; }
+  .achieve-stats { grid-template-columns: 1fr 1fr; }
+  .sub-page-card { padding: 1.5rem; }
+  .award-banner { padding: 2rem 1.5rem; }
+}

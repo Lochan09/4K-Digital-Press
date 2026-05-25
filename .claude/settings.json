@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:5174/api/content)",
+      "WebFetch(domain:4k-digital-press.netlify.app)",
+      "Bash(curl -s \"https://4k-digital-press.netlify.app/\")",
+      "Bash(python3 -c ' *)",
+      "PowerShell(if \\(Test-Path \"C:\\\\Users\\\\dell\\\\4K-Digital-Press\\\\public\"\\) { Get-ChildItem \"C:\\\\Users\\\\dell\\\\4K-Digital-Press\\\\public\" -Recurse | ForEach-Object { $_.FullName } } else { \"public/ folder missing\" })",
+      "Bash(curl -s \"https://4k-digital-press.netlify.app/\" -o /tmp/netlify.html)",
+      "Read(//tmp/**)"
+    ]
+  }
+}

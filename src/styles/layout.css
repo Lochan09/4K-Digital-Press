@@ -1,0 +1,369 @@
+/* ── Page wrapper — full viewport width ──────────────── */
+.page-shell {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ── Sticky header — centered at its own max-width ───── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 28px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  background: rgba(8, 8, 8, 0.97);
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
+/* Sub-page topbar wrapper (About / Achievements) */
+.topbar-wrap {
+  width: 100%;
+}
+
+/* ── Brand / logo block ──────────────────────────────── */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand span {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Serif font for headings */
+.brand strong,
+.section-heading h2,
+.order-intro h2,
+.review-section h2 {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.brand strong {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent-2);
+}
+
+.brand small {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.48rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.brand-mark {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: #1A1A1A;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ── Navigation links ────────────────────────────────── */
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+}
+
+.nav a {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #D4A941;
+  transition: color 0.25s;
+}
+
+.nav a:hover,
+.social-links a:hover {
+  color: var(--accent-2);
+}
+
+/* ── Hero — full-width, two-col content ──────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7rem 28px;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.section-grid {
+  display: grid;
+  /* minmax(0, fr) prevents min-content from expanding tracks past container */
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 32px;
+  margin-top: 28px;
+}
+
+/* Hero content */
+.hero-copy {
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ── Sections — full-width panels ────────────────────── */
+.section {
+  width: 100%;
+  margin-top: 0;
+  padding: 5rem max(3rem, calc((100% - 1200px) / 2));
+  border: none;
+  border-radius: 0;
+  background: var(--bg-soft);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+/* Alternating section backgrounds */
+.section:nth-of-type(even) {
+  background: var(--bg);
+}
+
+/* ── Section typography ──────────────────────────────── */
+/* DM Mono eyebrow label with gold gradient */
+.eyebrow,
+.section-heading p:first-child {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.5rem;
+}
+
+h1,
+.section-heading h2,
+.order-intro h2,
+.review-section h2 {
+  margin: 12px 0;
+  line-height: 1.06;
+}
+
+h1 {
+  font-size: clamp(3rem, 6vw, 6rem);
+  font-weight: 700;
+  color: var(--accent-2);
+}
+
+.section-heading h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--accent-2);
+}
+
+h1 span,
+.section-heading h2 span,
+.order-intro h2 span,
+.review-section h2 span {
+  font-style: italic;
+  background: linear-gradient(135deg, #D4A017 0%, #FFD700 60%, #FFE55C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lede,
+.section-heading p:last-child,
+.service-card p,
+.catalog-card p,
+.contact-card p,
+.order-intro p,
+.review-card span {
+  color: #E8C14A;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+/* ── Hero elements ───────────────────────────────────── */
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 36px;
+}
+
+.ticker {
+  margin-top: 40px;
+  display: flex;
+  gap: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.ticker span {
+  flex: 0 0 auto;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 40px;
+}
+
+/* Card style for inner elements */
+.stats div,
+.feature-card,
+.contact-card,
+.service-card,
+.review-card,
+.album-card {
+  padding: 20px;
+  border-radius: 10px;
+  background: #1A1A1A;
+  border: 1.5px solid var(--line);
+  box-shadow: 0 3px 16px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+
+/* catalog-card keeps its own override in components.css */
+
+.stats div:hover,
+.feature-card:hover,
+.service-card:hover {
+  border-color: var(--accent-2);
+  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15);
+  transform: translateY(-3px);
+}
+
+/* Stat number */
+.stats strong,
+.feature-card strong {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-weight: 700;
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+/* Stat label */
+.stats span,
+.feature-card span {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #C9A84C;
+  margin-top: 0.4rem;
+  display: block;
+}
+
+/* ── Hero album grid ─────────────────────────────────── */
+.hero-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* ── Footer ──────────────────────────────────────────── */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 2.5rem max(3rem, calc((100% - 1200px) / 2));
+  background: #080808;
+  border-top: 1px solid rgba(255, 215, 0, 0.12);
+  border-radius: 0;
+  margin: 0;
+}
+
+.footer strong {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #F5F5F5;
+  margin-bottom: 4px;
+}
+
+.footer span,
+.crafted {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.crafted {
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  color: var(--gold-light);
+}
+
+.footer-links {
+  justify-content: center;
+}
+
+.footer-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  max-width: 100%;
+}
+
+/* Section heading layout */
+.section-heading {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.section-heading h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.section-heading.narrow p:last-child {
+  max-width: 70ch;
+}

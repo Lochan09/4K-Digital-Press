@@ -1,0 +1,35 @@
+/* ── Design tokens — exact match with live site ──────── */
+:root {
+  color-scheme: dark;
+
+  /* Backgrounds */
+  --bg:           #0D0D0D;
+  --bg-soft:      #111111;
+  --panel:        rgba(19, 19, 19, 0.97);
+  --panel-strong: #131313;
+
+  /* Typography */
+  --text:         #D4A941;
+  --muted:        #A07830;
+
+  /* Borders */
+  --line:         rgba(201, 168, 76, 0.25);
+  --line-strong:  rgba(201, 168, 76, 0.6);
+
+  /* Accents */
+  --accent:       #D4A017;
+  --accent-2:     #FFD700;
+  --gold-light:   #FFE55C;
+  --gold-soft:    #1A1500;
+
+  /* Gradients — exact from live site */
+  --grad-gold:    linear-gradient(135deg, #D4A017 0%, #FFD700 50%, #FFE55C 100%);
+  --grad-main:    linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 45%, #FFD700 100%);
+  --grad-section: linear-gradient(160deg, #141414 0%, #1E1E1E 100%);
+  --grad-card:    linear-gradient(145deg, #1E1E1E 0%, #141414 100%);
+  --grad-dark:    linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 60%, #A07830 100%);
+
+  /* Shadows */
+  --shadow:       0 3px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg:    0 20px 60px rgba(0, 0, 0, 0.4);
+}
