@@ -23,7 +23,7 @@ export default function Header({ activePage, onNavigate }: Props) {
         <span className="brand-mark">
           <img
             className="brand-logo"
-            src="/logo.png"
+            src="/logo-footer.png"
             alt="4K Digital Press"
             onError={(e) => {
               const t = e.currentTarget;
@@ -32,10 +32,7 @@ export default function Header({ activePage, onNavigate }: Props) {
             }}
           />
         </span>
-        <span>
-          <strong>4K Digital Press</strong>
-          <small>Premium Wedding Albums — Mysuru</small>
-        </span>
+        <small className="brand-tag">Premium Wedding Albums · Mysuru</small>
       </button>
 
       <nav className="nav">
