@@ -157,8 +157,8 @@
   background: url('/logo-footer.png') center / contain no-repeat;
   pointer-events: none;
   z-index: -1;
-  opacity: 0.065;
-  filter: sepia(1) saturate(5) hue-rotate(8deg) brightness(2.8);
+  opacity: 0.09;
+  filter: sepia(1) saturate(5) hue-rotate(8deg) brightness(3.6);
 }
 
 /* ── Section typography ──────────────────────────────── */
