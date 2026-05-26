@@ -2,8 +2,6 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import {
   onAuthStateChanged,
   signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
   signOut as fbSignOut,
   User,
 } from 'firebase/auth';
@@ -18,18 +16,14 @@ interface AuthCtx {
 
 const Ctx = createContext<AuthCtx | null>(null);
 
-const IS_PROD = window.location.hostname !== 'localhost';
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null | undefined>(undefined);
 
   useEffect(() => {
-    getRedirectResult(auth).catch(() => {});
     return onAuthStateChanged(auth, setUser);
   }, []);
 
   function signIn() {
-    if (IS_PROD) return signInWithRedirect(auth, gProvider);
     return signInWithPopup(auth, gProvider);
   }
 
