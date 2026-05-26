@@ -14,10 +14,12 @@ import AchievementsPage from './components/pages/AchievementsPage';
 import AdminPage from './components/pages/AdminPage';
 import MyOrdersPage from './components/pages/MyOrdersPage';
 import FloatingButtons from './components/ui/FloatingButtons';
+import { useScrollReveal } from './hooks/useScrollReveal';
 import type { Page } from './types';
 
 function AppInner() {
   const [activePage, setActivePage] = useState<Page>('main');
+  useScrollReveal(activePage);
 
   React.useEffect(() => {
     fetch('/api/content').catch(() => {});
