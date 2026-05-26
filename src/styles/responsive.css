@@ -31,12 +31,20 @@
   /* ── Topbar ── */
   .topbar {
     flex-wrap: wrap;
-    gap: 10px;
-    padding: 12px 16px;
+    gap: 0;
+    padding: 10px 16px;
   }
 
-  .nav {
-    gap: 8px;
+  /* Hide desktop nav and right-side elements */
+  .nav--desktop,
+  .nav-end {
+    display: none;
+  }
+
+  /* Show hamburger */
+  .hamburger {
+    display: flex;
+    margin-left: auto;
   }
 
   /* ── Sections — reduce side padding ── */
