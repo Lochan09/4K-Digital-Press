@@ -46,11 +46,15 @@ function loadRefreshToken() {
   } catch { return null; }
 }
 
-// ── Google Drive upload ───────────────────────────────────
-async function uploadFilesToDrive(files, folderName) {
+function makeDriveClient() {
   const auth = makeOAuthClient();
   auth.setCredentials({ refresh_token: loadRefreshToken() });
-  const drive = google.drive({ version: 'v3', auth });
+  return google.drive({ version: 'v3', auth });
+}
+
+// ── Google Drive upload (photos) ──────────────────────────
+async function uploadFilesToDrive(files, folderName) {
+  const drive = makeDriveClient();
 
   const { data: folder } = await drive.files.create({
     requestBody: {
@@ -61,7 +65,6 @@ async function uploadFilesToDrive(files, folderName) {
     fields: 'id,webViewLink',
   });
 
-  // Make folder publicly viewable (anyone with link)
   await drive.permissions.create({
     fileId: folder.id,
     requestBody: { role: 'reader', type: 'anyone' },
@@ -78,6 +81,93 @@ async function uploadFilesToDrive(files, folderName) {
 
   return folder.webViewLink;
 }
+
+// ── Drive orders persistence ──────────────────────────────
+let _driveOrdersFileId = null;
+
+async function getDriveOrdersFileId(drive) {
+  if (_driveOrdersFileId) return _driveOrdersFileId;
+
+  const { data } = await drive.files.list({
+    q: `name='orders.jsonl' and '${process.env.DRIVE_PARENT_FOLDER_ID}' in parents and trashed=false`,
+    fields: 'files(id)',
+    spaces: 'drive',
+  });
+
+  if (data.files.length > 0) {
+    _driveOrdersFileId = data.files[0].id;
+    return _driveOrdersFileId;
+  }
+
+  const { data: created } = await drive.files.create({
+    requestBody: {
+      name: 'orders.jsonl',
+      mimeType: 'text/plain',
+      parents: [process.env.DRIVE_PARENT_FOLDER_ID],
+    },
+    media: { mimeType: 'text/plain', body: '' },
+    fields: 'id',
+  });
+
+  _driveOrdersFileId = created.id;
+  return _driveOrdersFileId;
+}
+
+function streamToString(stream) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on('data', c => chunks.push(Buffer.from(c)));
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    stream.on('error', reject);
+  });
+}
+
+async function driveReadOrdersContent() {
+  const drive = makeDriveClient();
+  const fileId = await getDriveOrdersFileId(drive);
+  const res = await drive.files.get(
+    { fileId, alt: 'media' },
+    { responseType: 'stream' },
+  );
+  return streamToString(res.data);
+}
+
+async function driveAppendOrder(orderJson) {
+  const drive = makeDriveClient();
+  const fileId = await getDriveOrdersFileId(drive);
+
+  let existing = '';
+  try {
+    const res = await drive.files.get(
+      { fileId, alt: 'media' },
+      { responseType: 'stream' },
+    );
+    existing = await streamToString(res.data);
+  } catch { /* file is empty or unreadable — start fresh */ }
+
+  await drive.files.update({
+    fileId,
+    media: { mimeType: 'text/plain', body: existing + orderJson + '\n' },
+  });
+}
+
+// On startup: if local orders file is missing, restore it from Drive
+async function bootstrapOrdersFromDrive() {
+  if (!loadRefreshToken() || !process.env.DRIVE_PARENT_FOLDER_ID) return;
+  if (fsSync.existsSync(ordersFile)) return;
+  try {
+    const content = await driveReadOrdersContent();
+    if (content.trim()) {
+      await fs.mkdir(dataDir, { recursive: true });
+      await fs.writeFile(ordersFile, content);
+      console.log('Orders restored from Google Drive.');
+    }
+  } catch (err) {
+    console.error('Drive bootstrap error:', err.message);
+  }
+}
+
+await bootstrapOrdersFromDrive();
 
 // ── Gmail ─────────────────────────────────────────────────
 const mailer = nodemailer.createTransport({
@@ -121,17 +211,13 @@ app.use(express.urlencoded({ extended: true }));
 // ── OAuth routes (one-time setup) ─────────────────────────
 app.get('/auth/setup', (_req, res) => {
   try {
-    console.log('CLIENT_ID:', process.env.OAUTH_CLIENT_ID ? 'loaded' : 'MISSING');
-    console.log('REDIRECT_URI:', process.env.OAUTH_REDIRECT_URI);
     const url = makeOAuthClient().generateAuthUrl({
       access_type: 'offline',
       prompt: 'consent',
       scope: ['https://www.googleapis.com/auth/drive'],
     });
-    console.log('Redirecting to Google:', url.slice(0, 80));
     res.redirect(url);
   } catch (err) {
-    console.error('Auth setup error:', err.message);
     res.status(500).send('Auth error: ' + err.message);
   }
 });
@@ -194,9 +280,16 @@ app.post('/api/orders', upload.array('photos', 200), async (req, res) => {
       order.driveFolderUrl = driveFolderUrl;
     }
 
-    // Save to orders.jsonl
+    // Save to local orders.jsonl
     await fs.mkdir(dataDir, { recursive: true });
     await fs.appendFile(ordersFile, JSON.stringify(order) + '\n');
+
+    // Sync to Drive orders.jsonl (non-blocking — local write already succeeded)
+    if (process.env.DRIVE_PARENT_FOLDER_ID && loadRefreshToken()) {
+      driveAppendOrder(JSON.stringify(order)).catch(err =>
+        console.error('Drive orders sync error:', err.message),
+      );
+    }
 
     // Send email (non-blocking)
     if (process.env.GMAIL_USER && process.env.GMAIL_PASS && process.env.OWNER_EMAIL) {
@@ -210,7 +303,6 @@ app.post('/api/orders', upload.array('photos', 200), async (req, res) => {
     console.error('Order error:', err);
     res.status(500).json({ error: 'Server error. Please try again.' });
   } finally {
-    // Clean up temp files
     for (const f of tempFiles) {
       fs.unlink(f.path).catch(() => {});
     }
@@ -263,7 +355,7 @@ app.get('/api/orders/admin', async (req, res) => {
   }
 });
 
-// ── Read all orders (admin) ───────────────────────────────
+// ── Read all orders (unauthenticated) ─────────────────────
 app.get('/api/orders', async (_req, res) => {
   try {
     const raw = await fs.readFile(ordersFile, 'utf8').catch(() => '');
@@ -274,7 +366,6 @@ app.get('/api/orders', async (_req, res) => {
   }
 });
 
-// ── SPA fallback ──────────────────────────────────────────
 // ── Static files + SPA fallback (must be last) ───────────
 app.use(express.static(path.join(__dirname, '..', 'dist')));
 app.get('/{*splat}', (_req, res) =>
