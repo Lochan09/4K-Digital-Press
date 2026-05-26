@@ -1397,6 +1397,99 @@ textarea::placeholder {
   margin-top: 0.5rem;
 }
 
+/* ── Floating action buttons ─────────────────────────── */
+.fab-stack {
+  position: fixed;
+  bottom: 28px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  z-index: 200;
+}
+
+.fab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  transition: transform 0.22s, box-shadow 0.22s;
+  text-decoration: none;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.fab svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.fab-label {
+  position: absolute;
+  right: calc(100% + 10px);
+  background: rgba(10, 10, 10, 0.92);
+  color: #fff;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.fab:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+}
+
+.fab:hover .fab-label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fab--instagram {
+  background: radial-gradient(circle at 30% 110%, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.fab--instagram:hover {
+  box-shadow: 0 8px 28px rgba(220, 39, 67, 0.5);
+}
+
+.fab--whatsapp {
+  background: #25d366;
+}
+
+.fab--whatsapp:hover {
+  box-shadow: 0 8px 28px rgba(37, 211, 102, 0.5);
+}
+
+.fab--order {
+  background: linear-gradient(135deg, #D4A017 0%, #FFD700 100%);
+  color: #111;
+}
+
+.fab--order:hover {
+  box-shadow: 0 8px 28px rgba(255, 215, 0, 0.5);
+}
+
+@media (max-width: 480px) {
+  .fab-stack { bottom: 20px; right: 16px; gap: 10px; }
+  .fab { width: 44px; height: 44px; }
+  .fab svg { width: 20px; height: 20px; }
+}
+
 /* Mobile sub-pages */
 @media (max-width: 768px) {
   .sub-page-section { padding: 5rem 1.2rem 3rem; }

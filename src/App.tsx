@@ -13,6 +13,7 @@ import AboutPage from './components/pages/AboutPage';
 import AchievementsPage from './components/pages/AchievementsPage';
 import AdminPage from './components/pages/AdminPage';
 import MyOrdersPage from './components/pages/MyOrdersPage';
+import FloatingButtons from './components/ui/FloatingButtons';
 import type { Page } from './types';
 
 function AppInner() {
@@ -41,6 +42,7 @@ function AppInner() {
           <Reviews />
         </main>
         <Footer />
+        <FloatingButtons />
       </div>
     );
   }
@@ -54,6 +56,7 @@ function AppInner() {
       {activePage === 'achievements' && <AchievementsPage onBack={() => navigateTo('main')} />}
       {activePage === 'admin'        && <AdminPage        onBack={() => navigateTo('main')} />}
       {activePage === 'myorders'     && <MyOrdersPage     onBack={() => navigateTo('main')} />}
+      <FloatingButtons />
     </>
   );
 }
