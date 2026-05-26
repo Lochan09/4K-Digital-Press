@@ -101,6 +101,8 @@
   padding: 7rem 28px;
   background: var(--bg);
   overflow: hidden;
+  position: relative;
+  isolation: isolate;
 }
 
 .section-grid {
@@ -133,11 +135,30 @@
   background: var(--bg-soft);
   box-shadow: none;
   backdrop-filter: none;
+  position: relative;
+  isolation: isolate;
 }
 
 /* Alternating section backgrounds */
 .section:nth-of-type(even) {
   background: var(--bg);
+}
+
+/* ── Gold watermark on every section and hero ────────── */
+.hero::before,
+.section::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(500px, 60%);
+  aspect-ratio: 180 / 57;
+  background: url('/logo-footer.png') center / contain no-repeat;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.065;
+  filter: sepia(1) saturate(5) hue-rotate(8deg) brightness(2.8);
 }
 
 /* ── Section typography ──────────────────────────────── */
