@@ -1,31 +1,284 @@
+import 'dotenv/config';
 import express from 'express';
+import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import cors from 'cors';
-import contentRouter from './routes/content.js';
-import ordersRouter from './routes/orders.js';
+import multer from 'multer';
+import nodemailer from 'nodemailer';
+import { google } from 'googleapis';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname  = path.dirname(__filename);
 
-const app = express();
+const app        = express();
+const PORT       = process.env.PORT || 5174;
+const dataDir    = path.join(__dirname, '..', 'data');
+const tempDir    = path.join(dataDir, 'temp');
+const ordersFile = path.join(dataDir, 'orders.jsonl');
+const authFile   = path.join(dataDir, 'auth.json');
 
-app.use(cors());
+// ── Ensure dirs exist ─────────────────────────────────────
+await fs.mkdir(tempDir, { recursive: true });
+
+// ── Multer — temp storage ─────────────────────────────────
+const upload = multer({
+  dest: tempDir,
+  limits: { fileSize: 50 * 1024 * 1024, files: 200 },
+  fileFilter(_req, file, cb) {
+    cb(null, /^image\//i.test(file.mimetype) || /^video\//i.test(file.mimetype));
+  },
+});
+
+// ── OAuth2 helpers ────────────────────────────────────────
+function makeOAuthClient() {
+  return new google.auth.OAuth2(
+    process.env.OAUTH_CLIENT_ID,
+    process.env.OAUTH_CLIENT_SECRET,
+    process.env.OAUTH_REDIRECT_URI,
+  );
+}
+
+function loadRefreshToken() {
+  if (process.env.OAUTH_REFRESH_TOKEN) return process.env.OAUTH_REFRESH_TOKEN;
+  try {
+    return JSON.parse(fsSync.readFileSync(authFile, 'utf8')).refresh_token || null;
+  } catch { return null; }
+}
+
+// ── Google Drive upload ───────────────────────────────────
+async function uploadFilesToDrive(files, folderName) {
+  const auth = makeOAuthClient();
+  auth.setCredentials({ refresh_token: loadRefreshToken() });
+  const drive = google.drive({ version: 'v3', auth });
+
+  const { data: folder } = await drive.files.create({
+    requestBody: {
+      name: folderName,
+      mimeType: 'application/vnd.google-apps.folder',
+      parents: [process.env.DRIVE_PARENT_FOLDER_ID],
+    },
+    fields: 'id,webViewLink',
+  });
+
+  // Make folder publicly viewable (anyone with link)
+  await drive.permissions.create({
+    fileId: folder.id,
+    requestBody: { role: 'reader', type: 'anyone' },
+  });
+
+  await Promise.all(
+    files.map(f =>
+      drive.files.create({
+        requestBody: { name: f.originalname, parents: [folder.id] },
+        media: { mimeType: f.mimetype, body: fsSync.createReadStream(f.path) },
+      }),
+    ),
+  );
+
+  return folder.webViewLink;
+}
+
+// ── Gmail ─────────────────────────────────────────────────
+const mailer = nodemailer.createTransport({
+  service: 'gmail',
+  auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
+});
+
+async function sendOrderEmail(order, driveFolderUrl) {
+  const photosCell = driveFolderUrl
+    ? `<a href="${driveFolderUrl}">View ${order.photoCount} photo(s) in Drive →</a>`
+    : 'Not provided';
+
+  await mailer.sendMail({
+    from: `"4K Digital Press Orders" <${process.env.GMAIL_USER}>`,
+    to: process.env.OWNER_EMAIL,
+    subject: `New Order #${order.id} — ${order.name} | ${order.productCategory}`,
+    html: `
+      <h2 style="color:#B8860B">New Order Received</h2>
+      <p><b>Order ID:</b> ${order.id}</p>
+      <p><b>Time:</b> ${new Date(order.createdAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
+      <table border="1" cellpadding="10" cellspacing="0"
+             style="border-collapse:collapse;font-family:sans-serif;font-size:14px">
+        <tr><td><b>Name</b></td><td>${order.name}</td></tr>
+        <tr><td><b>Phone</b></td><td>${order.phone}</td></tr>
+        <tr><td><b>Email</b></td><td>${order.email}</td></tr>
+        <tr><td><b>Product Category</b></td><td>${order.productCategory}</td></tr>
+        <tr><td><b>Album Size</b></td><td>${order.albumSize || '—'}</td></tr>
+        <tr><td><b>Occasion</b></td><td>${order.occasion || '—'}</td></tr>
+        <tr><td><b>Design Code</b></td><td>${order.designCode || '—'}</td></tr>
+        <tr><td><b>Names / Custom Text</b></td><td>${order.customText || '—'}</td></tr>
+        <tr><td><b>Additional Notes</b></td><td>${order.notes || '—'}</td></tr>
+        <tr><td><b>Photos</b></td><td>${photosCell}</td></tr>
+      </table>`,
+  });
+}
+
+// ── Middleware ────────────────────────────────────────────
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '..', 'dist')));
+app.use(express.urlencoded({ extended: true }));
 
-// API routes
-app.use('/api/content', contentRouter);
-app.use('/api/orders', ordersRouter);
-
-// Serve the React app for all other GET requests (client-side routing)
-app.use((req, res, next) => {
-  if (req.method === 'GET') {
-    res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
-  } else {
-    next();
+// ── OAuth routes (one-time setup) ─────────────────────────
+app.get('/auth/setup', (_req, res) => {
+  try {
+    console.log('CLIENT_ID:', process.env.OAUTH_CLIENT_ID ? 'loaded' : 'MISSING');
+    console.log('REDIRECT_URI:', process.env.OAUTH_REDIRECT_URI);
+    const url = makeOAuthClient().generateAuthUrl({
+      access_type: 'offline',
+      prompt: 'consent',
+      scope: ['https://www.googleapis.com/auth/drive'],
+    });
+    console.log('Redirecting to Google:', url.slice(0, 80));
+    res.redirect(url);
+  } catch (err) {
+    console.error('Auth setup error:', err.message);
+    res.status(500).send('Auth error: ' + err.message);
   }
 });
 
-const PORT = process.env.PORT || 5174;
+app.get('/auth/callback', async (req, res) => {
+  try {
+    const { tokens } = await makeOAuthClient().getToken(req.query.code);
+    await fs.mkdir(dataDir, { recursive: true });
+    await fs.writeFile(authFile, JSON.stringify(tokens, null, 2));
+    res.send(`
+      <h2 style="color:green">✅ Google Drive connected!</h2>
+      <p>Copy the <b>refresh_token</b> from <code>data/auth.json</code>
+         into your <code>OAUTH_REFRESH_TOKEN</code> environment variable.</p>
+      <pre>${JSON.stringify(tokens, null, 2)}</pre>`);
+  } catch (err) {
+    res.status(500).send('OAuth error: ' + err.message);
+  }
+});
+
+// ── Order submission ──────────────────────────────────────
+app.post('/api/orders', upload.array('photos', 200), async (req, res) => {
+  const tempFiles = req.files || [];
+  try {
+    const {
+      'Your Name': name,
+      'Phone Number': phone,
+      'Your Email Address': email,
+      productCategory,
+      albumSize,
+      occasion,
+      'Design Code': designCode,
+      'Names / Custom Text': customText,
+      'Additional Notes': notes,
+    } = req.body;
+
+    if (!name || !phone || !email || !productCategory) {
+      return res.status(400).json({ error: 'Name, phone, email and product are required.' });
+    }
+
+    const order = {
+      id:              `ord_${Date.now()}`,
+      createdAt:       new Date().toISOString(),
+      name:            name.trim(),
+      phone:           phone.trim(),
+      email:           email.trim(),
+      productCategory: productCategory.trim(),
+      albumSize:       (albumSize || '').trim(),
+      occasion:        (occasion || '').trim(),
+      designCode:      (designCode || '').trim(),
+      customText:      (customText || '').trim(),
+      notes:           (notes || '').trim(),
+      photoCount:      tempFiles.length,
+    };
+
+    // Upload photos to Drive
+    let driveFolderUrl = null;
+    if (tempFiles.length > 0 && process.env.DRIVE_PARENT_FOLDER_ID && loadRefreshToken()) {
+      const folderName = `${order.id} — ${order.name} — ${order.phone}`;
+      driveFolderUrl = await uploadFilesToDrive(tempFiles, folderName);
+      order.driveFolderUrl = driveFolderUrl;
+    }
+
+    // Save to orders.jsonl
+    await fs.mkdir(dataDir, { recursive: true });
+    await fs.appendFile(ordersFile, JSON.stringify(order) + '\n');
+
+    // Send email (non-blocking)
+    if (process.env.GMAIL_USER && process.env.GMAIL_PASS && process.env.OWNER_EMAIL) {
+      sendOrderEmail(order, driveFolderUrl).catch(err =>
+        console.error('Email error:', err.message),
+      );
+    }
+
+    res.status(201).json({ ok: true, orderId: order.id, driveFolderUrl });
+  } catch (err) {
+    console.error('Order error:', err);
+    res.status(500).json({ error: 'Server error. Please try again.' });
+  } finally {
+    // Clean up temp files
+    for (const f of tempFiles) {
+      fs.unlink(f.path).catch(() => {});
+    }
+  }
+});
+
+// ── My Orders — lookup by email ───────────────────────────
+app.get('/api/orders/lookup', async (req, res) => {
+  const email = String(req.query.email || '').trim().toLowerCase();
+  if (!email) return res.status(400).json({ error: 'Email required.' });
+  try {
+    const raw = await fs.readFile(ordersFile, 'utf8').catch(() => '');
+    const orders = raw.trim().split('\n').filter(Boolean).map(JSON.parse)
+      .filter(o => String(o.email || '').toLowerCase() === email)
+      .reverse();
+    res.json({ orders });
+  } catch {
+    res.json({ orders: [] });
+  }
+});
+
+// ── Admin — all orders (Firebase token required) ──────────
+app.get('/api/orders/admin', async (req, res) => {
+  const token = String(req.headers.authorization || '').replace('Bearer ', '').trim();
+  if (!token) return res.status(401).json({ error: 'Unauthorized.' });
+
+  try {
+    const fbRes = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.VITE_FIREBASE_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: token }),
+      },
+    );
+    const fbData = await fbRes.json();
+    if (!fbRes.ok || !fbData.users?.[0])
+      return res.status(401).json({ error: 'Invalid token.' });
+
+    const callerEmail = String(fbData.users[0].email || '').toLowerCase();
+    if (callerEmail !== String(process.env.OWNER_EMAIL || '').toLowerCase())
+      return res.status(403).json({ error: 'Access denied.' });
+
+    const raw = await fs.readFile(ordersFile, 'utf8').catch(() => '');
+    const orders = raw.trim().split('\n').filter(Boolean).map(JSON.parse).reverse();
+    res.json({ orders });
+  } catch (err) {
+    console.error('Admin auth error:', err);
+    res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// ── Read all orders (admin) ───────────────────────────────
+app.get('/api/orders', async (_req, res) => {
+  try {
+    const raw = await fs.readFile(ordersFile, 'utf8').catch(() => '');
+    const orders = raw.trim().split('\n').filter(Boolean).map(JSON.parse).reverse();
+    res.json(orders);
+  } catch {
+    res.json([]);
+  }
+});
+
+// ── SPA fallback ──────────────────────────────────────────
+// ── Static files + SPA fallback (must be last) ───────────
+app.use(express.static(path.join(__dirname, '..', 'dist')));
+app.get('/{*splat}', (_req, res) =>
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html')),
+);
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

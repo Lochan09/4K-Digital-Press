@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AuthProvider } from './context/AuthContext';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import Hero from './components/sections/Hero';
@@ -10,10 +11,11 @@ import Contact from './components/sections/Contact';
 import Reviews from './components/sections/Reviews';
 import AboutPage from './components/pages/AboutPage';
 import AchievementsPage from './components/pages/AchievementsPage';
+import AdminPage from './components/pages/AdminPage';
+import MyOrdersPage from './components/pages/MyOrdersPage';
+import type { Page } from './types';
 
-type Page = 'main' | 'about' | 'achievements';
-
-function App() {
+function AppInner() {
   const [activePage, setActivePage] = useState<Page>('main');
 
   React.useEffect(() => {
@@ -48,10 +50,18 @@ function App() {
       <div className="topbar-wrap">
         <Header activePage={activePage} onNavigate={navigateTo} />
       </div>
-      {activePage === 'about' && <AboutPage onBack={() => navigateTo('main')} />}
+      {activePage === 'about'        && <AboutPage        onBack={() => navigateTo('main')} />}
       {activePage === 'achievements' && <AchievementsPage onBack={() => navigateTo('main')} />}
+      {activePage === 'admin'        && <AdminPage        onBack={() => navigateTo('main')} />}
+      {activePage === 'myorders'     && <MyOrdersPage     onBack={() => navigateTo('main')} />}
     </>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppInner />
+    </AuthProvider>
+  );
+}

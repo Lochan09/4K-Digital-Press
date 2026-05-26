@@ -505,6 +505,20 @@ textarea::placeholder {
   background: #1A1500;
 }
 
+.upload-placeholder--selected {
+  border-color: rgba(52, 211, 153, 0.5);
+  background: rgba(5, 150, 105, 0.06);
+}
+
+.upload-placeholder--selected:hover {
+  border-color: rgba(52, 211, 153, 0.75);
+  background: rgba(5, 150, 105, 0.1);
+}
+
+.upload-placeholder--selected strong {
+  color: #34d399;
+}
+
 .upload-placeholder strong {
   display: block;
   margin: 0;
@@ -524,6 +538,180 @@ textarea::placeholder {
 .submit-button {
   margin-top: 14px;
   width: 100%;
+}
+
+.submit-button:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(0, 0, 0, 0.25);
+  border-top-color: #0A0A0A;
+  animation: btn-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Upload progress bar ─────────────────────────────── */
+.upload-progress {
+  margin-top: 14px;
+  background: #1A1A1A;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.upload-progress-bar {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #2A1A00, #8B6000, #FFD700);
+  transition: width 0.3s ease;
+  border-radius: 8px;
+}
+
+.upload-progress span {
+  position: relative;
+  z-index: 1;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: #0A0A0A;
+  font-weight: 700;
+}
+
+/* ── Per-file progress list ──────────────────────────── */
+.file-progress-list {
+  margin-top: 14px;
+  background: #141414;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.file-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #1A1A1A;
+  border-bottom: 1px solid var(--line);
+}
+
+.file-progress-header span {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.file-progress-total {
+  color: var(--accent-2) !important;
+  font-weight: 700;
+}
+
+.file-progress-items {
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 169, 65, 0.3) transparent;
+}
+
+.file-progress-items::-webkit-scrollbar {
+  width: 4px;
+}
+
+.file-progress-items::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.file-progress-items::-webkit-scrollbar-thumb {
+  background: rgba(212, 169, 65, 0.3);
+  border-radius: 4px;
+}
+
+.file-progress-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(212, 169, 65, 0.07);
+}
+
+.file-progress-item:last-child {
+  border-bottom: none;
+}
+
+.file-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.file-progress-name {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+.file-progress-info {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.file-progress-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.file-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5B3A00, #C8960C, #FFD700);
+  border-radius: 4px;
+  transition: width 0.25s ease;
+}
+
+.file-progress-fill--done {
+  background: linear-gradient(90deg, #065f46, #059669, #34d399);
+}
+
+/* ── Order status messages ───────────────────────────── */
+.order-msg {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.order-msg-success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #86efac;
+}
+
+.order-msg-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
 }
 
 /* ── Contact section ─────────────────────────────────── */
@@ -633,6 +821,242 @@ textarea::placeholder {
   margin-bottom: 0.35rem;
   display: block;
   font-family: 'DM Mono', monospace;
+}
+
+/* ── Nav auth ────────────────────────────────────────── */
+.nav-signin-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  border-radius: 20px;
+  padding: 0.4rem 0.9rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.nav-signin-btn:hover {
+  background: var(--accent);
+  color: #0A0A0A;
+}
+
+.nav-user-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.nav-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+  flex-shrink: 0;
+}
+
+.nav-user-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  white-space: nowrap;
+}
+
+.nav-signout-btn {
+  background: none;
+  border: none;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.nav-signout-btn:hover {
+  color: var(--accent-2);
+}
+
+/* Order form — sign-in CTA button state */
+.submit-button--signin {
+  background: transparent !important;
+  border: 1.5px solid var(--accent) !important;
+  color: var(--accent) !important;
+  box-shadow: none !important;
+}
+
+.submit-button--signin:hover {
+  background: rgba(212, 160, 23, 0.08) !important;
+}
+
+/* Admin / My Orders pages */
+.admin-gate {
+  text-align: center;
+  padding: 5rem 0;
+}
+
+.admin-section {
+  padding: 5rem 2rem 4rem;
+  max-width: 100%;
+}
+
+.admin-error {
+  color: #fca5a5;
+  margin-bottom: 1rem;
+}
+
+.admin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1.5px solid var(--line);
+  margin-top: 1rem;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.admin-table th {
+  background: #1A1A1A;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(212, 169, 65, 0.07);
+  color: rgba(255, 255, 255, 0.85);
+  vertical-align: middle;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover td {
+  background: rgba(212, 169, 65, 0.03);
+}
+
+.admin-id {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--muted);
+}
+
+.admin-date {
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.admin-drive-link {
+  color: var(--accent-2);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-drive-link:hover {
+  text-decoration: underline;
+}
+
+/* My Orders cards */
+.myorder-card {
+  margin-bottom: 1rem;
+}
+
+.myorder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.myorder-id {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  margin: 0 0 4px;
+}
+
+.myorder-date {
+  font-size: 0.82rem;
+  color: var(--accent-2);
+  font-weight: 600;
+  margin: 0;
+}
+
+.myorder-status {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #86efac;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.myorder-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px 20px;
+}
+
+.myorder-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.myorder-grid strong {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.myorder-grid span {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.myorder-notes {
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.82rem;
+  color: var(--muted);
 }
 
 /* ── Nav text buttons (About Us / Achievements) ──────── */

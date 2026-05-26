@@ -27,3 +27,5 @@ export type Stat = {
   value: string;
   label: string;
 };
+
+export type Page = 'main' | 'about' | 'achievements' | 'admin' | 'myorders';
