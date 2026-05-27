@@ -8,7 +8,8 @@
       "PowerShell(if \\(Test-Path \"C:\\\\Users\\\\dell\\\\4K-Digital-Press\\\\public\"\\) { Get-ChildItem \"C:\\\\Users\\\\dell\\\\4K-Digital-Press\\\\public\" -Recurse | ForEach-Object { $_.FullName } } else { \"public/ folder missing\" })",
       "Bash(curl -s \"https://4k-digital-press.netlify.app/\" -o /tmp/netlify.html)",
       "Read(//tmp/**)",
-      "Bash(cd \"c:\\\\Users\\\\dell\\\\4K-Digital-Press\" && npm install nodemailer && mkdir -p server/data/temp)"
+      "Bash(cd \"c:\\\\Users\\\\dell\\\\4K-Digital-Press\" && npm install nodemailer && mkdir -p server/data/temp)",
+      "Bash(node -e ' *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\dell\\4K-Digital-Press\\server\\data"
