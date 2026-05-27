@@ -169,6 +169,24 @@ async function bootstrapOrdersFromDrive() {
 
 await bootstrapOrdersFromDrive();
 
+// Read orders from local file; if empty, fall back to Drive and restore
+async function readOrdersRaw() {
+  let raw = await fs.readFile(ordersFile, 'utf8').catch(() => '');
+  if (!raw.trim() && loadRefreshToken() && process.env.DRIVE_PARENT_FOLDER_ID) {
+    try {
+      raw = await driveReadOrdersContent();
+      if (raw.trim()) {
+        await fs.mkdir(dataDir, { recursive: true });
+        await fs.writeFile(ordersFile, raw);
+        console.log('Orders restored from Drive on-demand.');
+      }
+    } catch (e) {
+      console.error('Drive on-demand restore failed:', e.message);
+    }
+  }
+  return raw;
+}
+
 // ── Gmail ─────────────────────────────────────────────────
 const mailer = nodemailer.createTransport({
   service: 'gmail',
@@ -284,9 +302,9 @@ app.post('/api/orders', upload.array('photos', 200), async (req, res) => {
     await fs.mkdir(dataDir, { recursive: true });
     await fs.appendFile(ordersFile, JSON.stringify(order) + '\n');
 
-    // Sync to Drive orders.jsonl (non-blocking — local write already succeeded)
+    // Sync to Drive orders.jsonl (blocking — ensures orders survive Render restarts)
     if (process.env.DRIVE_PARENT_FOLDER_ID && loadRefreshToken()) {
-      driveAppendOrder(JSON.stringify(order)).catch(err =>
+      await driveAppendOrder(JSON.stringify(order)).catch(err =>
         console.error('Drive orders sync error:', err.message),
       );
     }
@@ -314,7 +332,7 @@ app.get('/api/orders/lookup', async (req, res) => {
   const email = String(req.query.email || '').trim().toLowerCase();
   if (!email) return res.status(400).json({ error: 'Email required.' });
   try {
-    const raw = await fs.readFile(ordersFile, 'utf8').catch(() => '');
+    const raw = await readOrdersRaw();
     const orders = raw.trim().split('\n').filter(Boolean).map(JSON.parse)
       .filter(o => String(o.email || '').toLowerCase() === email)
       .reverse();
@@ -346,7 +364,7 @@ app.get('/api/orders/admin', async (req, res) => {
     if (callerEmail !== String(process.env.OWNER_EMAIL || '').toLowerCase())
       return res.status(403).json({ error: 'Access denied.' });
 
-    const raw = await fs.readFile(ordersFile, 'utf8').catch(() => '');
+    const raw = await readOrdersRaw();
     const orders = raw.trim().split('\n').filter(Boolean).map(JSON.parse).reverse();
     res.json({ orders });
   } catch (err) {
