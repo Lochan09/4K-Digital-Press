@@ -2,6 +2,62 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { GoogleLogoSVG } from '../icons/GoogleLogoSVG';
 
+function exportCSV(orders: Order[]) {
+  const header = ['Order ID', 'Date', 'Name', 'Phone', 'Email', 'Product', 'Size', 'Occasion', 'Design Code', 'Custom Text', 'Notes', 'Photos'];
+  const rows = orders.map(o => [
+    o.id,
+    new Date(o.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+    o.name, o.phone, o.email,
+    o.productCategory, o.albumSize || '', o.occasion || '',
+    o.designCode || '', o.customText || '', o.notes || '',
+    o.photoCount,
+  ]);
+  const csv = [header, ...rows]
+    .map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `orders_${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function exportPDF(orders: Order[]) {
+  const { jsPDF } = await import('jspdf');
+  const autoTable = (await import('jspdf-autotable')).default;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.setTextColor(212, 160, 23);
+  doc.text('4K Digital Press — All Orders', 40, 40);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(150, 150, 150);
+  doc.text(`Exported on ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}  ·  ${orders.length} order(s)`, 40, 58);
+
+  autoTable(doc, {
+    startY: 72,
+    head: [['Order ID', 'Date', 'Name', 'Phone', 'Email', 'Product', 'Size', 'Occasion', 'Design', 'Photos']],
+    body: orders.map(o => [
+      o.id,
+      new Date(o.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+      o.name, o.phone, o.email,
+      o.productCategory, o.albumSize || '—', o.occasion || '—',
+      o.designCode || '—', o.photoCount > 0 ? o.photoCount : '—',
+    ]),
+    styles: { fontSize: 8, cellPadding: 5, textColor: [240, 240, 240], fillColor: [22, 22, 22] },
+    headStyles: { fillColor: [30, 20, 0], textColor: [212, 160, 23], fontStyle: 'bold', fontSize: 8 },
+    alternateRowStyles: { fillColor: [16, 16, 16] },
+    tableLineColor: [60, 50, 0],
+    tableLineWidth: 0.3,
+    margin: { left: 40, right: 40 },
+  });
+
+  doc.save(`orders_${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+
 const OWNER_EMAIL = import.meta.env.VITE_OWNER_EMAIL as string || '';
 
 interface Order {
@@ -86,9 +142,23 @@ export default function AdminPage({ onBack }: Props) {
         <button className="button button-ghost sub-page-back" onClick={onBack}>← Back</button>
         <p className="sub-page-eyebrow"><span className="eyebrow-line" />Monitor Orders</p>
         <h2 className="sub-page-title">All Orders</h2>
-        <p className="sub-page-subtitle">
-          {fetching ? 'Loading…' : `${orders.length} order${orders.length !== 1 ? 's' : ''} total`}
-        </p>
+        <div className="admin-header-row">
+          <p className="sub-page-subtitle">
+            {fetching ? 'Loading…' : `${orders.length} order${orders.length !== 1 ? 's' : ''} total`}
+          </p>
+          {orders.length > 0 && (
+            <div className="admin-export-btns">
+              <button className="admin-export-btn" onClick={() => exportCSV(orders)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                Export Excel
+              </button>
+              <button className="admin-export-btn admin-export-btn--pdf" onClick={() => exportPDF(orders)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="11" y2="17"/><polyline points="13 17 15 17 15 13"/></svg>
+                Export PDF
+              </button>
+            </div>
+          )}
+        </div>
 
         {error && <p className="admin-error">{error}</p>}
 
