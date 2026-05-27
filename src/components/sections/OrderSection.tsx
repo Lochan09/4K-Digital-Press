@@ -190,17 +190,22 @@ export default function OrderSection() {
             </label>
           ))}
 
-          {/* Email (controlled for auto-fill) */}
+          {/* Email — locked to Google account when signed in */}
           {orderFields.slice(2, 3).map((field) => (
             <label key={field.label} className="full-width">
-              <span>{field.label} *</span>
+              <span>
+                {field.label} *
+                {user && <span className="email-lock-badge">✓ from your account</span>}
+              </span>
               <input
                 name={field.label}
                 type="email"
                 placeholder={field.placeholder}
                 value={emailVal}
-                onChange={e => setEmailVal(e.target.value)}
+                onChange={e => !user && setEmailVal(e.target.value)}
+                readOnly={!!user}
                 required
+                style={user ? { opacity: 0.72, cursor: 'not-allowed' } : undefined}
               />
             </label>
           ))}

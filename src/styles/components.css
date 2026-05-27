@@ -1058,9 +1058,9 @@ textarea::placeholder {
   gap: 7px;
   padding: 8px 16px;
   border-radius: 980px;
-  border: 1.5px solid rgba(212, 160, 23, 0.35);
-  background: rgba(212, 160, 23, 0.06);
-  color: #D4A941;
+  border: 1.5px solid #16a34a;
+  background: #16a34a;
+  color: #fff;
   font-family: 'DM Mono', monospace;
   font-size: 0.65rem;
   font-weight: 500;
@@ -1071,22 +1071,22 @@ textarea::placeholder {
 }
 
 .admin-export-btn:hover {
-  background: rgba(212, 160, 23, 0.14);
-  border-color: rgba(212, 160, 23, 0.65);
-  box-shadow: 0 0 16px rgba(212, 160, 23, 0.18);
+  background: #15803d;
+  border-color: #15803d;
+  box-shadow: 0 0 20px rgba(22, 163, 74, 0.45);
   transform: translateY(-1px);
 }
 
 .admin-export-btn--pdf {
-  border-color: rgba(239, 68, 68, 0.35);
-  background: rgba(239, 68, 68, 0.06);
-  color: #f87171;
+  border-color: #dc2626;
+  background: #dc2626;
+  color: #fff;
 }
 
 .admin-export-btn--pdf:hover {
-  background: rgba(239, 68, 68, 0.14);
-  border-color: rgba(239, 68, 68, 0.65);
-  box-shadow: 0 0 16px rgba(239, 68, 68, 0.18);
+  background: #b91c1c;
+  border-color: #b91c1c;
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.45);
 }
 
 .admin-error {
@@ -1234,6 +1234,40 @@ textarea::placeholder {
   border-top: 1px solid var(--line);
   font-size: 0.82rem;
   color: var(--muted);
+}
+
+.email-lock-badge {
+  margin-left: 8px;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  color: #22c55e;
+  opacity: 0.85;
+}
+
+.myorder-lookup-card {
+  margin-bottom: 1.5rem;
+}
+
+.myorder-lookup-input {
+  flex: 1;
+  min-width: 220px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.22s, background 0.22s, box-shadow 0.22s;
+}
+
+.myorder-lookup-input:focus {
+  border-color: rgba(212, 160, 23, 0.6);
+  background: rgba(212, 160, 23, 0.04);
+  box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.1);
 }
 
 /* ── Nav text buttons (About Us / Achievements) ──────── */

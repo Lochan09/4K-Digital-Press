@@ -18,14 +18,16 @@ interface Props { onBack: () => void; }
 
 export default function MyOrdersPage({ onBack }: Props) {
   const { user, loading, signIn } = useAuth();
-  const [orders,   setOrders]   = useState<Order[]>([]);
-  const [fetching, setFetching] = useState(false);
-  const [error,    setError]    = useState('');
+  const [orders,       setOrders]       = useState<Order[]>([]);
+  const [fetching,     setFetching]     = useState(false);
+  const [error,        setError]        = useState('');
+  const [lookupEmail,  setLookupEmail]  = useState('');
+  const [manualMode,   setManualMode]   = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
+  function fetchOrders(email: string) {
     setFetching(true);
-    fetch(`/api/orders/lookup?email=${encodeURIComponent(user.email!)}`)
+    setError('');
+    fetch(`/api/orders/lookup?email=${encodeURIComponent(email)}`)
       .then(r => r.json())
       .then(d => {
         if (d.orders) setOrders(d.orders);
@@ -33,6 +35,11 @@ export default function MyOrdersPage({ onBack }: Props) {
       })
       .catch(() => setError('Network error.'))
       .finally(() => setFetching(false));
+  }
+
+  useEffect(() => {
+    if (!user) return;
+    fetchOrders(user.email!);
   }, [user]);
 
   if (loading) return null;
@@ -66,11 +73,49 @@ export default function MyOrdersPage({ onBack }: Props) {
           {fetching && <p style={{ color: 'var(--muted)' }}>Loading your orders…</p>}
           {error    && <p style={{ color: '#fca5a5' }}>{error}</p>}
 
-          {!fetching && orders.length === 0 && !error && (
+          {!fetching && orders.length === 0 && !error && !manualMode && (
             <div className="sub-page-card">
-              <p>You haven't placed any orders yet.</p>
-              <button className="button" style={{ marginTop: '1rem' }} onClick={onBack}>
+              <p>No orders found for <strong style={{ color: 'var(--accent-2)' }}>{user.email}</strong>.</p>
+              <p style={{ color: 'var(--muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                If you placed an order with a different email, search below.
+              </p>
+              <button
+                className="button button-ghost"
+                style={{ marginTop: '1rem' }}
+                onClick={() => setManualMode(true)}
+              >
+                Search by order email
+              </button>
+              <button className="button" style={{ marginTop: '0.75rem' }} onClick={onBack}>
                 Place Your First Order →
+              </button>
+            </div>
+          )}
+
+          {(manualMode && !fetching) && (
+            <div className="sub-page-card myorder-lookup-card">
+              <p style={{ marginBottom: '0.75rem', color: 'var(--muted)', fontSize: '0.85rem' }}>
+                Enter the email address you used when placing the order:
+              </p>
+              <form
+                style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}
+                onSubmit={e => { e.preventDefault(); if (lookupEmail.trim()) fetchOrders(lookupEmail.trim()); }}
+              >
+                <input
+                  type="email"
+                  className="myorder-lookup-input"
+                  placeholder="order@email.com"
+                  value={lookupEmail}
+                  onChange={e => setLookupEmail(e.target.value)}
+                  required
+                />
+                <button type="submit" className="button" style={{ flexShrink: 0 }}>Search</button>
+              </form>
+              <button
+                style={{ marginTop: '0.75rem', background: 'none', border: 'none', color: 'var(--muted)', fontSize: '0.78rem', cursor: 'pointer', padding: 0 }}
+                onClick={() => { setManualMode(false); setLookupEmail(''); fetchOrders(user.email!); }}
+              >
+                ← Back to my account orders
               </button>
             </div>
           )}
