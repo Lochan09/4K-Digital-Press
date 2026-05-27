@@ -12,6 +12,7 @@ interface Order {
   customText?: string;
   notes?: string;
   photoCount: number;
+  driveFolderUrl?: string;
 }
 
 interface Props { onBack: () => void; }
@@ -139,10 +140,30 @@ export default function MyOrdersPage({ onBack }: Props) {
                 {o.occasion   && <div><strong>Occasion</strong><span>{o.occasion}</span></div>}
                 {o.designCode && <div><strong>Design</strong><span>{o.designCode}</span></div>}
                 {o.customText && <div><strong>Custom Text</strong><span>{o.customText}</span></div>}
-                {o.photoCount > 0 && <div><strong>Photos</strong><span>{o.photoCount} uploaded</span></div>}
+                {o.photoCount > 0 && (
+                  <div>
+                    <strong>Photos</strong>
+                    <span>{o.photoCount} uploaded</span>
+                  </div>
+                )}
               </div>
               {o.notes && (
                 <p className="myorder-notes"><em>Note:</em> {o.notes}</p>
+              )}
+
+              {o.driveFolderUrl && (
+                <a
+                  href={o.driveFolderUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="myorder-photos-btn"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  View {o.photoCount} Uploaded Photo{o.photoCount !== 1 ? 's' : ''} →
+                </a>
               )}
             </div>
           ))}
